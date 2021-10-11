@@ -9,10 +9,10 @@ module Exercise
         array.map { |item| item.positive? ? max : item }
       end
 
-      def search(array, query, acc = 0)
-        size = array.length
+      def search(array, query)
+        return - 1 unless array.include?(query)
 
-        return - 1 if size.zero? || array.last < query || array.first > query
+        size = array.length
 
         index = if size == 1
                   0
@@ -22,19 +22,21 @@ module Exercise
                   size / 2
                 end
 
-        return acc + index if array[index] == query
+        return index if array[index] == query
 
         if array[index] > query
           new_arr = array.slice(0..index)
 
-          return search(new_arr, query, acc)
+          return search(new_arr, query)
         end
 
         if array[index] < query
           new_arr = array.slice(index + 1..size - 1)
-          delta = size - new_arr.length
+          result = search(new_arr, query)
 
-          return search(new_arr, query, acc + delta)
+          return result if result == -1
+
+          return size - new_arr.length + result
         end
         -1
       end
