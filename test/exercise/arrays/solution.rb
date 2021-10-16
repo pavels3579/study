@@ -10,17 +10,11 @@ module Exercise
       end
 
       def search(array, query)
-        return - 1 unless array.include?(query)
-
         size = array.length
 
-        index = if size == 1
-                  0
-                elsif size.even?
-                  size / 2 - 1
-                else
-                  size / 2
-                end
+        return - 1 if size.zero? || array.last < query || array.first > query
+
+        index = get_index(size)
 
         return index if array[index] == query
 
@@ -38,7 +32,20 @@ module Exercise
 
           return size - new_arr.length + result
         end
+
         -1
+      end
+
+      private
+
+      def get_index(size)
+        if size == 1
+          0
+        elsif size.even?
+          size / 2 - 1
+        else
+          size / 2
+        end
       end
     end
   end
