@@ -10,41 +10,23 @@ module Exercise
       end
 
       def search(array, query)
+        return -1 if array.empty? || array.first > query || array.last < query
+
         size = array.length
+        middle = size.even? ? size / 2 - 1 : size / 2
 
-        return - 1 if size.zero? || array.last < query || array.first > query
+        return middle if array[middle] == query
 
-        index = get_index(size)
-
-        return index if array[index] == query
-
-        if array[index] > query
-          new_arr = array.slice(0..index)
-
-          return search(new_arr, query)
-        end
-
-        if array[index] < query
-          new_arr = array.slice(index + 1..size - 1)
-          result = search(new_arr, query)
-
-          return result if result == -1
-
-          return size - new_arr.length + result
-        end
-
-        -1
-      end
-
-      private
-
-      def get_index(size)
-        if size == 1
-          0
-        elsif size.even?
-          size / 2 - 1
+        if array[middle] > query
+          new_arr = array.slice(0..middle - 1)
+          search(new_arr, query)
         else
-          size / 2
+          new_arr = array.slice(middle + 1..size - 1)
+          search_index = search(new_arr, query)
+
+          return -1 if search_index == -1
+
+          middle + 1 + search_index
         end
       end
     end
