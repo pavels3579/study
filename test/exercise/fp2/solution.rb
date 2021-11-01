@@ -6,45 +6,53 @@ module Exercise
 
       # Написать свою функцию my_each
       def my_each(&block)
-        for e in self do
-          block.call(e)
+        head, *tail = self
+
+        if tail.empty?
+          block.call(head)
+        else
+          new_arr = MyArray.new
+          new_arr.concat(tail)
+          [block.call(head), new_arr.my_each(&block)]
         end
+        self
       end
 
       # Написать свою функцию my_map
       def my_map(&block)
-        new_arr = MyArray.new
-        my_each do |e|
-          new_arr << block.call(e)
+        my_reduce(MyArray.new) do |acc, item|
+          acc << block.call(item)
+          acc
         end
-
-        new_arr
       end
 
       # Написать свою функцию my_compact
       def my_compact
-        new_arr = MyArray.new
-        my_each do |e|
-          new_arr << e unless e.nil?
+        my_reduce(MyArray.new) do |acc, item|
+          acc << item unless item.nil?
+          acc
         end
-
-        new_arr
       end
 
       # Написать свою функцию my_reduce
       def my_reduce(acc = nil, &block)
-        acc_given = acc.nil? ? false : true
-        index = 0
-        my_each do |e|
-          acc = if !acc_given && index.zero?
-                  self[0]
-                else
-                  block.call(acc, e)
-                end
+        head, *tail = self
 
-          index += 1
+        if acc.nil? && tail.empty?
+          first
+        elsif acc.nil? && !tail.empty?
+          new_arr = MyArray.new
+          new_arr.concat(tail)
+          new_arr.my_reduce(first, &block)
+        elsif tail.empty?
+          block.call(acc, head)
+        else
+          new_arr = MyArray.new
+          new_arr.concat(tail)
+
+          new_acc = block.call(acc, head)
+          new_arr.my_reduce(new_acc, &block)
         end
-        acc
       end
     end
   end
