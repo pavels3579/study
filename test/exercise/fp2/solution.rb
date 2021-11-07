@@ -6,15 +6,12 @@ module Exercise
 
       # Написать свою функцию my_each
       def my_each(&block)
-        head, *tail = self
+        return if empty?
 
-        if tail.empty?
-          block.call(head)
-        else
-          new_arr = MyArray.new
-          new_arr.concat(tail)
-          [block.call(head), new_arr.my_each(&block)]
-        end
+        head, *tail = self
+        block.call(head)
+        new_arr = MyArray.new(tail)
+        new_arr.my_each(&block)
         self
       end
 
@@ -36,20 +33,15 @@ module Exercise
 
       # Написать свою функцию my_reduce
       def my_reduce(acc = nil, &block)
+        return acc if empty?
+
         head, *tail = self
 
-        if acc.nil? && tail.empty?
-          first
-        elsif acc.nil? && !tail.empty?
-          new_arr = MyArray.new
-          new_arr.concat(tail)
-          new_arr.my_reduce(first, &block)
-        elsif tail.empty?
-          block.call(acc, head)
-        else
-          new_arr = MyArray.new
-          new_arr.concat(tail)
+        new_arr = MyArray.new(tail)
 
+        if acc.nil?
+          new_arr.my_reduce(first, &block)
+        else
           new_acc = block.call(acc, head)
           new_arr.my_reduce(new_acc, &block)
         end
